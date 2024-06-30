@@ -1,19 +1,20 @@
-# FractalShares
-#### A simple way for tokenization of the Real World Assets
+## FractalShares
+### A simple way for tokenization of the Real World Assets
 
-## Project SetUp
+
+#### Project SetUp
 
 ```shell
 $ git clone https://github.com/jitendragangwar123/FractalShares.git
 $ cd FractalShares
 ```
-### To start the Backend-Server
+##### To start the Back-end
 ```shell
 $ cd server
 $ npm i
 $ npm start
 ```
-### To start the Client-Server
+##### To start the Front-end
 ```shell
 $ cd client
 $ npm i
