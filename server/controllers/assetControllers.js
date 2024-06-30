@@ -107,11 +107,11 @@ exports.transferDiamTokens = async (req, res) => {
 
 exports.issueAssets = async (req, res) => {
     try {
-        const { issuerSecret, receiverSecret, amountLimit, amount } = req.body;
-        if (!issuerSecret || !receiverSecret || !amountLimit || !amount) {
+        const { issuerSecret, receiverSecret, amountLimit, assetName, amount } = req.body;
+        if (!issuerSecret || !receiverSecret || !amountLimit || !assetName || !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
-        
+
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
         const issuerPublicKey = issuerKeypair.publicKey();
@@ -119,7 +119,7 @@ exports.issueAssets = async (req, res) => {
         const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const receiverPublicKey = receiverKeypair.publicKey();
 
-        const assetXYZ = new Asset("ABCDE", issuerPublicKey);
+        const assetDetails = new Asset(assetName, issuerPublicKey);
 
         //Change trust operation
         let changeTrustResult;
@@ -133,7 +133,7 @@ exports.issueAssets = async (req, res) => {
                 })
                     .addOperation(
                         Operation.changeTrust({
-                            asset: assetXYZ,
+                            asset: assetDetails,
                             limit: amountLimit,
                         })
                     )
@@ -156,7 +156,7 @@ exports.issueAssets = async (req, res) => {
                     .addOperation(
                         Operation.payment({
                             destination: receiverPublicKey,
-                            asset: assetXYZ,
+                            asset: assetDetails,
                             amount: amount,
                         })
                     )
@@ -168,7 +168,7 @@ exports.issueAssets = async (req, res) => {
             .then(result => {
                 console.log(result);
                 paymentResult = result;
-                res.status(200).json({ message: "Operations successful", changeTrustResult, paymentResult});
+                res.status(200).json({ message: "Operations successful", changeTrustResult, paymentResult });
             })
             .catch(function (error) {
                 console.error("Error!", error);
@@ -180,3 +180,66 @@ exports.issueAssets = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.transferAssets = async (req, res) => {
+    try {
+        const { senderSecret, issuerPublicKey, receiverPublicKey, assetName, amount } = req.body;
+        if (!senderSecret || !issuerPublicKey || !receiverPublicKey || !amount) {
+            return res.status(400).json({ error: "Missing required parameters" });
+        }
+        const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
+        const senderKeypair = Keypair.fromSecret(senderSecret);
+        const senderPublicKey = senderKeypair.publicKey();
+
+        const account = await server.loadAccount(senderPublicKey);
+
+        const txnForIssueTrust = new TransactionBuilder(account, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: Networks.TESTNET,
+        })
+            .addOperation(
+                Operation.changeTrust({
+                    asset: new Asset(
+                        assetName,
+                        issuerPublicKey
+                    ),
+                })
+            )
+            .setTimeout(30)
+            .build();
+
+
+        txnForIssueTrust.sign(senderKeypair);
+        const resForIssueTrust = await server.submitTransaction(txnForIssueTrust);
+
+        const transaction = new TransactionBuilder(account, {
+            fee: await server.fetchBaseFee(),
+            networkPassphrase: Networks.TESTNET,
+        })
+            .addOperation(
+                Operation.payment({
+                    destination: receiverPublicKey,
+                    asset: new Asset(
+                        assetName,
+                        issuerPublicKey
+                    ),
+                    amount: amount,
+                })
+            )
+            .setTimeout(30)
+            .build();
+
+
+        transaction.sign(senderKeypair);
+        const result = await server.submitTransaction(transaction);
+
+        res.json({
+            message: `Payment of ${amount} ${assetName} made to ${receiverPublicKey} successfully`,
+        });
+
+    } catch (error) {
+        console.error("Error in transferring the assets:", error);
+        res.status(500).json({ error: error.message });
+    }
+}

@@ -8,5 +8,6 @@ router
     .post('/fundDiamTokens',assetController.fundDiamTokens)
     .post('/transferDiamTokens',assetController.transferDiamTokens)
     .post('/issueAssets',assetController.issueAssets)
+    .post('/transferAssets',assetController.transferAssets)
 
 module.exports=router;
