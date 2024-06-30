@@ -185,7 +185,7 @@ exports.issueAssets = async (req, res) => {
 exports.transferAssets = async (req, res) => {
     try {
         const { senderSecret, issuerPublicKey, receiverPublicKey, assetName, amount } = req.body;
-        if (!senderSecret || !issuerPublicKey || !receiverPublicKey || !amount) {
+        if (!senderSecret || !issuerPublicKey || !receiverPublicKey || !assetName|| !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
