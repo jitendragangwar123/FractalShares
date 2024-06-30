@@ -59,3 +59,9 @@ curl -X POST http://localhost:8000/issueAssets -H "Content-Type: application/jso
 ```shell
 curl -X POST http://localhost:8000/transferAssets -H "Content-Type: application/json" -d '{"senderSecret": "SENDER_SECRET_KEY", "issuerPublicKey": "ISSUER_PUBLIC_KEY",  "assetName":"REALTY", "amount":"20.0000000" }'
 ```
+##### 7. investInAssets
+
+```shell
+curl -X POST http://localhost:8000/investInAsset -H "Content-Type: application/json" -d '{"receiverSecret": "SDS7JTS75AGPIIJCYZX7LM775G3HVQVDU4X4QDFYMDO4DHYL4PQPSPOH", "issuerSecret": "SC4PC3VAGWDVCDMYEJQZWDX6AVWCTMHRSH3YW455JYLSSJKMF4E6VVRK", "amountLimit": "1000.0000000", "assetName": "COMMERCIAL", "amountAsset": "200.0000000", "amountDIAM": "50.0000000" }'
+
+```
