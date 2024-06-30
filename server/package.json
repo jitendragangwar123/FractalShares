@@ -1,0 +1,25 @@
+{
+  "name": "fractal-shares",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "diamante-sdk-js": "^1.0.3",
+    "dotenv": "^16.1.4",
+    "express": "^4.19.2",
+    "mongodb": "^5.6.0",
+    "mongoose": "^5.5.2",
+    "morgan": "^1.10.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
