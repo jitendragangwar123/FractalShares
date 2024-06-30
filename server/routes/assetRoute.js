@@ -7,5 +7,6 @@ router
     .post('/generatePublicKey',assetController.generatePublicKey)
     .post('/fundDiamTokens',assetController.fundDiamTokens)
     .post('/transferDiamTokens',assetController.transferDiamTokens)
+    .post('/issueAssets',assetController.issueAssets)
 
 module.exports=router;
