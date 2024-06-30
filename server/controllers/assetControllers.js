@@ -188,8 +188,8 @@ exports.issueAssets = async (req, res) => {
 
 exports.transferAssets = async (req, res) => {
     try {
-        const { senderSecret, issuerPublicKey, receiverPublicKey, assetName, amount } = req.body;
-        if (!senderSecret || !issuerPublicKey || !receiverPublicKey || !assetName|| !amount) {
+        const { senderSecret, issuerPublicKey, assetName, amount } = req.body;
+        if (!senderSecret || !issuerPublicKey || !assetName|| !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
@@ -223,7 +223,7 @@ exports.transferAssets = async (req, res) => {
         })
             .addOperation(
                 Operation.payment({
-                    destination: receiverPublicKey,
+                    destination: issuerPublicKey,
                     asset: new Asset(
                         assetName,
                         issuerPublicKey
@@ -239,7 +239,7 @@ exports.transferAssets = async (req, res) => {
         const result = await server.submitTransaction(transaction);
 
         res.json({
-            message: `Payment of ${amount} ${assetName} made to ${receiverPublicKey} successfully`,
+            message: `Payment of ${amount} ${assetName} made to ${issuerPublicKey} successfully`,
         });
 
     } catch (error) {
