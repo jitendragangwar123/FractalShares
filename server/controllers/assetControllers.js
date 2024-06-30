@@ -10,6 +10,10 @@ const {
 
 const { Horizon } = require("diamante-sdk-js");
 
+exports.welcomeMsg= async (req,res)=>{
+    res.status(200).json({ message: "Welcome to FractalShares Application!" });
+};
+
 exports.createKeyPair = async (req, res) => {
     try {
         const keypair = Keypair.random();

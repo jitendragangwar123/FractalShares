@@ -3,6 +3,7 @@ const assetController=require("../controllers/assetControllers");
 const router=express.Router();
 
 router
+    .get('/',assetController.welcomeMsg)
     .post('/createKeyPair',assetController.createKeyPair)
     .post('/generatePublicKey',assetController.generatePublicKey)
     .post('/fundDiamTokens',assetController.fundDiamTokens)
