@@ -16,6 +16,6 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use('/api/v1/', assetRouter);
+app.use('/', assetRouter);
 
 module.exports = app;
