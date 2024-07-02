@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  box-sizing: border-box;
+}
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes fadeInDelay {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
+}
+
+.animate-fadeInDelay {
+  animation: fadeInDelay 1.5s ease-in-out;
+}
+
+.transition {
+  transition: all 0.3s ease;
+}
+
+.feat-img-right {
+  will-change: transform;
+  transform: translateX(100%);
+  transition: transform 1.5s;
+}
+.feat-img-right.in-view {
+  transform: translateX(0);
+  transition: transform 1.5s;
+}
+.feat-img-left {
+  will-change: transform;
+  transform: translateX(-100%);
+  transition: transform 1.5s;
+}
+.feat-img-left.in-view {
+  transform: translateX(0);
+  transition: transform 1.5s;
+}
+
+.dark-img {
+  opacity: var(--dark-img-opacity);
+  transition: opacity 0.5s;
+}
+.light-img {
+  opacity: var(--light-img-opacity);
+  transition: opacity 0.5s;
+} 
+
+ 
