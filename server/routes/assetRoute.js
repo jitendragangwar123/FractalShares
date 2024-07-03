@@ -10,6 +10,7 @@ router
   .post("/transferDiamTokens", assetController.transferDiamTokens)
   .post("/issueAssets", assetController.issueAssets)
   .post("/transferAssets", assetController.transferAssets)
-  .post("/investInAsset", assetController.investInAsset);
+  .post("/investInAsset", assetController.investInAsset)
+  .post("/createTrustline",assetController.createTrustline)
 
 module.exports = router;
