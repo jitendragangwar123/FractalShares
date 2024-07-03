@@ -109,11 +109,11 @@ exports.transferDiamTokens = async (req, res) => {
     }
 };
 
-exports.issueAssets = async (req, res) => {
+exports.createTrustline = async (req, res) => {
     try {
-        const { issuerSecret, receiverSecret, amountLimit, assetName, amount } = req.body;
+        const { issuerSecret, receiverSecret, amountLimit, assetName } = req.body;
 
-        if (!issuerSecret || !receiverSecret || !amountLimit || !assetName || !amount) {
+        if (!issuerSecret || !receiverSecret || !amountLimit || !assetName) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
 
@@ -122,7 +122,6 @@ exports.issueAssets = async (req, res) => {
         const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
 
-        // Change trust operation
         try {
             const receiverAccount = await server.loadAccount(receiverKeypair.publicKey());
             const changeTrustTransaction = new TransactionBuilder(receiverAccount, {
@@ -141,45 +140,66 @@ exports.issueAssets = async (req, res) => {
             changeTrustTransaction.sign(receiverKeypair);
             const changeTrustResult = await server.submitTransaction(changeTrustTransaction);
             console.log("Change Trust Result:", changeTrustResult);
-
-            // Payment operation
-            try {
-                const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
-                const paymentTransaction = new TransactionBuilder(issuerAccount, {
-                    fee: 100,
-                    networkPassphrase: Networks.TESTNET,
-                })
-                    .addOperation(
-                        Operation.payment({
-                            destination: receiverKeypair.publicKey(),
-                            asset: assetDetails,
-                            amount: amount,
-                        })
-                    )
-                    .setTimeout(100)
-                    .build();
-
-                paymentTransaction.sign(issuerKeypair);
-                const paymentResult = await server.submitTransaction(paymentTransaction);
-                console.log("Payment Result:", paymentResult);
-
-                res.status(200).json({
-                    message: "Operations successful",
-                    changeTrustResult,
-                    paymentResult,
-                });
-            } catch (paymentError) {
-                console.error("Payment Operation Error:", paymentError);
-                res.status(500).json({
-                    error: "An error occurred during the payment transaction",
-                    details: paymentError.response?.data || paymentError.message,
-                });
-            }
+            res.status(200).json({
+                message: "ChangeTrustLine successfully!",
+                changeTrustResult
+            });
         } catch (changeTrustError) {
             console.error("Change Trust Operation Error:", changeTrustError);
             res.status(500).json({
                 error: "An error occurred during the change trust transaction",
                 details: changeTrustError.response?.data || changeTrustError.message,
+            });
+        }
+    } catch (error) {
+        console.error("Error in issuance of assets:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+exports.issueAssets = async (req, res) => {
+    try {
+        const { issuerSecret, receiverSecret, assetName, amount } = req.body;
+
+        if (!issuerSecret || !receiverSecret || !assetName || !amount) {
+            return res.status(400).json({ error: "Missing required parameters" });
+        }
+
+        const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
+        const issuerKeypair = Keypair.fromSecret(issuerSecret);
+        const receiverKeypair = Keypair.fromSecret(receiverSecret);
+        const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
+
+        try {
+            const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
+            const paymentTransaction = new TransactionBuilder(issuerAccount, {
+                fee: 100,
+                networkPassphrase: Networks.TESTNET,
+            })
+                .addOperation(
+                    Operation.payment({
+                        destination: receiverKeypair.publicKey(),
+                        asset: assetDetails,
+                        amount: amount,
+                    })
+                )
+                .setTimeout(100)
+                .build();
+
+            paymentTransaction.sign(issuerKeypair);
+            const paymentResult = await server.submitTransaction(paymentTransaction);
+            console.log("Payment Result:", paymentResult);
+
+            res.status(200).json({
+                message: "Operations successful",
+                paymentResult,
+            });
+        } catch (paymentError) {
+            console.error("Payment Operation Error:", paymentError);
+            res.status(500).json({
+                error: "An error occurred during the payment transaction",
+                details: paymentError.response?.data || paymentError.message,
             });
         }
     } catch (error) {
