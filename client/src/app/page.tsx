@@ -44,7 +44,7 @@ export default function Home() {
           <div className="flex w-full lg:w-1/3 justify-center lg:justify-end">
             <Image
               className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] transition duration-700 ease-in-out transform hover:scale-105"
-              src="/DiamanteHomeImage.png"
+              src="/diamanteHomeImage.png"
               alt="Home Image"
               width={600}
               height={150}
