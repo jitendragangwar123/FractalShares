@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useNetwork } from "@starknet-react/core";
 import { Button } from "@/app/components/ui/button";
 import {
   Command,
@@ -35,10 +34,9 @@ const networks = [
 ];
 
 export function NetworkSwitcher() {
-  const { chain } = useNetwork();
   const [open, setOpen] = React.useState(false);
   const [selectedNetwork, setSelectedNetwork] = React.useState(
-    NETWORK_MAPPING[chain.network]
+    NETWORK_MAPPING[""]
   );
 
   const switchNetwork = async (newNetworkId: string, networkLabel: string) => {
@@ -49,10 +47,9 @@ export function NetworkSwitcher() {
     }
   };
 
-  //Update selectedNetwork when chain.network changes
   React.useEffect(() => {
-    setSelectedNetwork(NETWORK_MAPPING[chain.network]);
-  }, [chain.network]);
+    setSelectedNetwork(NETWORK_MAPPING[""]);
+  }, [""]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

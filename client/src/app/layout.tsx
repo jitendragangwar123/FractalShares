@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { DiamProvider } from "@/app/components/DiamProvider";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +20,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} dark:bg-black bg-gray-300 dark:text-white transition-all duration-500 ease-in-out`}
       >
-        <DiamProvider>{children}</DiamProvider>
+        <main>{children}</main>
         <Toaster 
          position="top-right"
          reverseOrder={false}
