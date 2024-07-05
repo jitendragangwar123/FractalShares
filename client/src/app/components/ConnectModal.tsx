@@ -50,11 +50,20 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
   };
 
   const connectWallet = () => {
+    if (!(window as any).diam) {
+      toast.error("Diam Wallet extension is not installed!");
+      return;
+    }
     (window as any).diam
       .connect()
       .then((res: { message: SetStateAction<string>[] }) => {
-        const address:any=res.message[0];
+        const address: any = res.message[0];
         setAddress(address);
+        toast.success("Wallet Connected!");
+      })
+      .catch((error: any) => {
+        console.error("Failed to connect wallet:", error);
+        toast.error("Failed to connect wallet!");
       });
   };
 
@@ -156,10 +165,12 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
             <Button onClick={() => setCurrentScreen("import")}>
               <div className="flex justify-center gap-2">Import Wallet</div>
             </Button>
-            <Button onClick={() => {
-                    connectWallet();
-                    closeModal();
-                  }}>
+            <Button
+              onClick={() => {
+                connectWallet();
+                closeModal();
+              }}
+            >
               <div className="flex justify-center gap-2">Connect Wallet</div>
             </Button>
           </div>
@@ -286,6 +297,7 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
                   className="bg-blue-600 py-2 px-8 rounded text-white hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed"
                   onClick={() => {
                     setAddress(publicKey);
+                    toast.success("Wallet Connected!");
                     closeModal();
                   }}
                   disabled={isLoading || !secret || !publicKey}
