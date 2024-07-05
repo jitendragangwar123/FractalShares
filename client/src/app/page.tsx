@@ -5,7 +5,7 @@ import Footer from "~/Footer";
 import Link from "next/link";
 import GithubIcon from "./svg/GithubIcon";
 import UpRightArrowIcon from "./svg/UpRightArrowIcon";
-import Features from "./components/Features/Features";
+import Features from "~/Features/Features";
 
 export default function Home() {
  

@@ -1,13 +1,13 @@
 import PurchaseAssets from "~/PurchaseAssets/PurchaseAssets";
 import TransactionsTable from "~/PurchaseAssets/TransactionsTable";
-import MarketplaceHeader from "~/Marketplace/MarketplaceHeader";
+import Header from "~/Header";
 import Footer from "~/Footer";
 
 
 export default async function Page() {
   return (
     <div className="">
-      <MarketplaceHeader/>
+      <Header/>
       <PurchaseAssets />
       <TransactionsTable/>
       <Footer/>

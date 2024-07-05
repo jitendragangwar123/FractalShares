@@ -1,13 +1,12 @@
 import UserDashboard from "@/app/components/Portfolio/UserDashboard";
-//import PropertyOwnerPortfolio from "~/PropertyOwner/PropertyOwnerPortfolio";
-import MarketplaceHeader from "~/Marketplace/MarketplaceHeader";
+import Header from "~/Header";
 import Footer from "~/Footer";
 
 
 export default async function Page() {
   return (
     <div className="">
-      <MarketplaceHeader/>
+      <Header/>
       <UserDashboard />
       <Footer/>
     </div> 
