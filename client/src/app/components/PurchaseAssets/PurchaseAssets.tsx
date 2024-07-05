@@ -24,12 +24,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 }) => {
   const [quantity, setQuantity] = useState(tokenQuantity);
   const [isLoading, setIsLoading] = useState(false);
+  const [publicKey, setPublicKey] = useState("");
 
   const handleIncrement = () => setQuantity(quantity + 1);
   const handleDecrement = () => quantity > 0 && setQuantity(quantity - 1);
 
   const handleInvestment = async () => {
-    const receiverSecret =
+    const investorSecret =
       "SCXQIKV26BUIU7HSMFSKZFBFL5G3ZMGF777ZTW7DE2UFJFCYBZSY2F22";
     const issuerSecret =
       "SABO6PBN6PAVXVZRHAQMGNAGXLK742AZXB7CNR6WZQPPIBXAEYLZ3VFX";
@@ -47,8 +48,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         }
       );
       const res: any = await getPublicKey.json();
-      const recieverpublicKey = res.publicKey;
-      console.log("recieverpublicKey: ", recieverpublicKey);
+      const issuerPublicKey = res.publicKey;
+      console.log("issuerPublicKey: ", issuerPublicKey);
 
       const diamTransfer = await fetch(
         "https://fractal-shares.vercel.app/transferDiamTokens",
@@ -56,8 +57,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            senderSecret: receiverSecret,
-            receiverPublicKey: recieverpublicKey,
+            senderSecret: investorSecret,
+            receiverPublicKey: issuerPublicKey,
             amount: (quantity * price).toString(),
           }),
         }
@@ -72,14 +73,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             issuerSecret: issuerSecret,
-            receiverSecret: receiverSecret,
+            receiverSecret: investorSecret,
             assetName: assetName,
             amountLimit: amountLimit,
           }),
         }
       );
       const resCreateTrustline = await createTrustline.json();
-      console.log("resIssueAsset", resCreateTrustline);
+      console.log("resCreateTrustline: ", resCreateTrustline);
 
       const issueAsset = await fetch(
         "https://fractal-shares.vercel.app/issueAssets",
@@ -88,14 +89,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             issuerSecret: issuerSecret,
-            receiverSecret: receiverSecret,
+            receiverSecret: investorSecret,
             assetName: assetName,
             amount: quantity.toString(),
           }),
         }
       );
       const resIssueAsset = await issueAsset.json();
-      console.log("resIssueAsset", resIssueAsset);
+      console.log("resIssueAsset: ", resIssueAsset);
 
       toast.dismiss();
       toast.success("Investement successful!");
