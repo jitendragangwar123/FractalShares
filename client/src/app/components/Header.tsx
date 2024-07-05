@@ -1,18 +1,19 @@
 "use client";
-
+import PublickKeyBar from "./PublicKeyBar";
+import UserModal from "./UserModal";
 import { useEffect, useRef, useState } from "react";
 import useTheme from "../hooks/useTheme";
 import ThemeSwitch from "./Theme";
 import NetworkSwitcher from "./NetworkSwitcher";
 import ConnectModal from "./ConnectModal";
 import Image from "next/image";
-import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 const Header = () => {
   const [openConnectModal, setOpenConnectModal] = useState(false);
   const [openConnectedModal, setOpenConnectedModal] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
-  const [publicKey, setPublicKey] = useState('');
+  const [publicKey, setPublicKey] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const toggleModal = () => {
@@ -29,7 +30,10 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setOpenMenu(false);
       }
     };
@@ -66,25 +70,6 @@ const Header = () => {
 
   const { theme, changeTheme } = useTheme();
 
-  const shortenPublicKey = (key: string) => {
-    if (key.length > 16) {
-      return `${key.slice(0, 8)}......${key.slice(-8)}`;
-    }
-    return key;
-  };
-
-  const copyToClipboard = (key: string) => {
-    navigator.clipboard.writeText(key).then(
-      () => {
-        toast.success("Public key copied to clipboard!");
-      },
-      (err) => {
-        toast.error("Failed to copy public key.");
-        console.error("Failed to copy: ", err);
-      }
-    );
-  };
-
   return (
     <>
       <header
@@ -107,15 +92,24 @@ const Header = () => {
           </a>
         </div>
 
+        <div className="flex items-center gap-4 ml-auto md:flex md:gap-8">
+          <Link href="/marketplace" legacyBehavior>
+            <a className="text-gery-300 text-xl hover:underline">Marketplace</a>
+          </Link>
+          <Link href="/portfolio" legacyBehavior>
+            <a className="text-gery-300 text-xl mr-2 hover:underline">
+              Portfolio
+            </a>
+          </Link>
+        </div>
+
         <div className="hidden md:flex gap-8">
           {publicKey ? (
             <div className="flex justify-end items-center">
-              <button
-                className="mx-3 bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-full transition duration-300"
-                onClick={() => copyToClipboard(publicKey || "")}
-              >
-                {shortenPublicKey(publicKey || "")}
-              </button>
+              <PublickKeyBar
+                setOpenConnectedModal={setOpenConnectedModal}
+                publicKey={publicKey}
+              />
             </div>
           ) : (
             <button
@@ -149,43 +143,48 @@ const Header = () => {
             className="flex flex-col gap-2 md:hidden"
           >
             <div
-              className={`w-[1.5em] h-[2px] ${theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
-                } rounded-full transition-all duration-300 ease-in-out ${openMenu
+              className={`w-[1.5em] h-[2px] ${
+                theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
+              } rounded-full transition-all duration-300 ease-in-out ${
+                openMenu
                   ? "rotate-45 translate-y-[0.625em]"
                   : "rotate-0 translate-y-0"
-                }`}
+              }`}
             ></div>
             <div
-              className={`w-[1.5em] h-[2px] ${theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
-                } rounded-full transition-all duration-300 ease-in-out ${openMenu ? "opacity-0" : "opacity-100"
-                }`}
+              className={`w-[1.5em] h-[2px] ${
+                theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
+              } rounded-full transition-all duration-300 ease-in-out ${
+                openMenu ? "opacity-0" : "opacity-100"
+              }`}
             ></div>
             <div
-              className={`w-[1.5em] h-[2px] ${theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
-                } rounded-full transition-all duration-300 ease-in-out ${openMenu
+              className={`w-[1.5em] h-[2px] ${
+                theme === "dark" ? "bg-[#ffffff]" : "bg-[#000000]"
+              } rounded-full transition-all duration-300 ease-in-out ${
+                openMenu
                   ? "-rotate-45 translate-y-[-0.625em]"
                   : "rotate-0 translate-y-0"
-                }`}
+              }`}
             ></div>
           </button>
         </div>
 
         <div
-          className={`w-screen transition-all duration-300 ease-in-out grid ${openMenu
-            ? "min-h-[4rem] grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0"
-            } md:hidden`}
+          className={`w-screen transition-all duration-300 ease-in-out grid ${
+            openMenu
+              ? "min-h-[4rem] grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0"
+          } md:hidden`}
         >
           <div className="overflow-hidden">
             <div className="flex flex-wrap gap-8">
               {publicKey ? (
                 <div className="flex justify-end items-center">
-                  <button
-                    className="mx-3 bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-full transition duration-300"
-                    onClick={() => copyToClipboard(publicKey || "")}
-                  >
-                    {shortenPublicKey(publicKey || "")}
-                  </button>
+                  <PublickKeyBar
+                    setOpenConnectedModal={setOpenConnectedModal}
+                    publicKey={publicKey}
+                  />
                 </div>
               ) : (
                 <button
@@ -201,7 +200,17 @@ const Header = () => {
         </div>
       </header>
 
-      <ConnectModal isOpen={openConnectModal} onClose={toggleModal} setAddress={setPublicKey} />
+      <ConnectModal
+        isOpen={openConnectModal}
+        onClose={toggleModal}
+        setAddress={setPublicKey}
+      />
+      <UserModal
+        openConnectedModal={openConnectedModal}
+        closeConnectedModal={toggleUserModal}
+        publicKey={publicKey ? publicKey : ""}
+        setPublicKey={setPublicKey}
+      />
     </>
   );
 };
