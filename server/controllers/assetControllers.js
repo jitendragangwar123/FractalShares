@@ -1,5 +1,6 @@
 const asset = require("../models/assetModel");
 
+
 const {
     Keypair,
     TransactionBuilder,
@@ -8,11 +9,17 @@ const {
     Asset,
 } = require("diamante-base");
 
+
 const { Horizon } = require("diamante-sdk-js");
+
+
+const accountToTimestampMap = new Map();
+
 
 exports.welcomeMsg = async (req, res) => {
     res.status(200).json({ message: "Welcome to FractalShares Application!" });
 };
+
 
 exports.createKeyPair = async (req, res) => {
     try {
@@ -26,6 +33,7 @@ exports.createKeyPair = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.generatePublicKey = async (req, res) => {
     try {
@@ -44,6 +52,7 @@ exports.generatePublicKey = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.fundDiamTokens = async (req, res) => {
     try {
@@ -69,6 +78,7 @@ exports.fundDiamTokens = async (req, res) => {
     }
 };
 
+
 exports.transferDiamTokens = async (req, res) => {
     try {
         const { senderSecret, receiverPublicKey, amount } = req.body;
@@ -78,6 +88,7 @@ exports.transferDiamTokens = async (req, res) => {
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const senderKeypair = Keypair.fromSecret(senderSecret);
         const senderPublicKey = senderKeypair.publicKey();
+
 
         const account = await server.loadAccount(senderPublicKey);
         const transaction = new TransactionBuilder(account, {
@@ -94,6 +105,7 @@ exports.transferDiamTokens = async (req, res) => {
             .setTimeout(30)
             .build();
 
+
         transaction.sign(senderKeypair);
         const result = await server.submitTransaction(transaction);
         console.log(
@@ -109,18 +121,22 @@ exports.transferDiamTokens = async (req, res) => {
     }
 };
 
+
 exports.createTrustline = async (req, res) => {
     try {
         const { issuerSecret, receiverSecret, amountLimit, assetName } = req.body;
+
 
         if (!issuerSecret || !receiverSecret || !amountLimit || !assetName) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
 
+
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
         const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
+
 
         try {
             const receiverAccount = await server.loadAccount(receiverKeypair.publicKey());
@@ -136,6 +152,7 @@ exports.createTrustline = async (req, res) => {
                 )
                 .setTimeout(100)
                 .build();
+
 
             changeTrustTransaction.sign(receiverKeypair);
             const changeTrustResult = await server.submitTransaction(changeTrustTransaction);
@@ -158,21 +175,33 @@ exports.createTrustline = async (req, res) => {
 };
 
 
+
+
+
+
 exports.issueAssets = async (req, res) => {
     try {
         const { issuerSecret, receiverSecret, assetName, amount } = req.body;
 
+
         if (!issuerSecret || !receiverSecret || !assetName || !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
+
 
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
         const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
 
+
         try {
             const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
+            const timestamp = accountToTimestampMap.get(receiverKeypair.publicKey());
+            console.log("timestamp", timestamp);
+            console.log("difference", Date.now() - timestamp)
+
+
             const paymentTransaction = new TransactionBuilder(issuerAccount, {
                 fee: 100,
                 networkPassphrase: Networks.TESTNET,
@@ -187,12 +216,13 @@ exports.issueAssets = async (req, res) => {
                 .setTimeout(100)
                 .build();
 
+
             paymentTransaction.sign(issuerKeypair);
             const paymentResult = await server.submitTransaction(paymentTransaction);
             console.log("Payment Result:", paymentResult);
-
+            accountToTimestampMap.set(receiverKeypair.publicKey(), Date.now());
             res.status(200).json({
-                message: "Operations successful",
+                message: "Investment successful",
                 paymentResult,
             });
         } catch (paymentError) {
@@ -208,6 +238,46 @@ exports.issueAssets = async (req, res) => {
     }
 };
 
+
+exports.calculateYield = async (req, res) => {
+    try {
+        const { principal, annualRate, days } = req.body;
+
+
+        if (!principal || !annualRate || !days) {
+            return res.status(400).json({ error: "Missing required parameters: principal, annualRate, and days" });
+        }
+
+
+        const principalAmount = parseFloat(principal);
+        const annualInterestRate = parseFloat(annualRate);
+        const investmentDays = parseInt(days);
+
+
+        if (isNaN(principalAmount) || isNaN(annualInterestRate) || isNaN(investmentDays)) {
+            return res.status(400).json({ error: "Invalid parameter values: principal, annualRate, and days must be numbers" });
+        }
+
+
+        const dailyRate = annualInterestRate / 365 / 100;
+        const totalAmount = principalAmount * Math.pow(1 + dailyRate, investmentDays);
+        const yieldAmount = totalAmount - principalAmount;
+
+        console.log("Yield Amount:", yieldAmount);
+
+
+        res.status(200).json({
+            yieldAmount: yieldAmount.toFixed(0)
+        });
+    } catch (error) {
+        console.error("Error calculating yield:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
 exports.transferAssets = async (req, res) => {
     try {
         const { senderSecret, issuerPublicKey, assetName, amount } = req.body;
@@ -218,7 +288,9 @@ exports.transferAssets = async (req, res) => {
         const senderKeypair = Keypair.fromSecret(senderSecret);
         const senderPublicKey = senderKeypair.publicKey();
 
+
         const account = await server.loadAccount(senderPublicKey);
+
 
         const txnForIssueTrust = new TransactionBuilder(account, {
             fee: await server.fetchBaseFee(),
@@ -232,8 +304,10 @@ exports.transferAssets = async (req, res) => {
             .setTimeout(30)
             .build();
 
+
         txnForIssueTrust.sign(senderKeypair);
         const resForIssueTrust = await server.submitTransaction(txnForIssueTrust);
+
 
         const transaction = new TransactionBuilder(account, {
             fee: await server.fetchBaseFee(),
@@ -249,8 +323,10 @@ exports.transferAssets = async (req, res) => {
             .setTimeout(30)
             .build();
 
+
         transaction.sign(senderKeypair);
         const result = await server.submitTransaction(transaction);
+
 
         res.json({
             message: `Payment of ${amount} ${assetName} made to ${issuerPublicKey} successfully`,
@@ -260,6 +336,7 @@ exports.transferAssets = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 exports.investInAsset = async (req, res) => {
     try {
@@ -282,19 +359,26 @@ exports.investInAsset = async (req, res) => {
             return res.status(400).json({ error: "Missing required parameters" });
         }
 
+
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
+
 
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
         const issuerPublicKey = issuerKeypair.publicKey();
 
+
         const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const receiverPublicKey = receiverKeypair.publicKey();
 
+
         const account = await server.loadAccount(receiverPublicKey);
+
+
         //Change trust operation
         let changeTrustResult;
         let paymentResult;
         let diamPaymentResult;
+
 
         const transaction = new TransactionBuilder(account, {
             fee: await server.fetchBaseFee(),
@@ -310,12 +394,15 @@ exports.investInAsset = async (req, res) => {
             .setTimeout(30)
             .build();
 
+
         transaction.sign(receiverKeypair);
         const result = await server.submitTransaction(transaction);
         console.log(`${amountDIAM} DIAM payment has been done successfully!!`);
         diamPaymentResult = result;
 
+
         const assetDetails = new Asset(assetName, issuerPublicKey);
+
 
         server
             .loadAccount(receiverPublicKey)
@@ -361,6 +448,8 @@ exports.investInAsset = async (req, res) => {
             .then((result) => {
                 console.log(result);
                 paymentResult = result;
+
+
                 res.status(200).json({
                     message: "Operations successful",
                     diamPaymentResult,

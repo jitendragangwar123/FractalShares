@@ -12,5 +12,6 @@ router
   .post("/transferAssets", assetController.transferAssets)
   .post("/investInAsset", assetController.investInAsset)
   .post("/createTrustline",assetController.createTrustline)
+  .post("/calculateYield",assetController.calculateYield)
 
 module.exports = router;
