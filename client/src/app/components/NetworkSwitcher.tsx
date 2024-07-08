@@ -20,7 +20,7 @@ import { cn } from "@/app/lib/utils";
 
 
 const NETWORK_MAPPING: { [key: string]: string } = {
- testnet: "Diam TestnetT",
+ testnet: "Diam Testnet",
  mainnet: "Diam Mainnet",
 };
 
