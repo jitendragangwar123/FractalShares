@@ -1,6 +1,6 @@
 import Image from "next/image";
 import GenericModal from "./GenericModal";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { toast } from "react-hot-toast";
 import CopyButton from "./CopyButton";
@@ -49,24 +49,34 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
     setWalletData((prevData) => ({ ...prevData, [attribute]: value }));
   };
 
-  const connectWallet = () => {
+  const connectWallet = async () => {
     if (!(window as any).diam) {
       toast.error("Diam Wallet extension is not installed!");
       return;
     }
-    (window as any).diam
-      .connect()
-      .then((res: { message: SetStateAction<string>[] }) => {
-        const address: any = res.message[0];
-        setAddress(address);
-        toast.success("Wallet Connected!");
-      })
-      .catch((error: any) => {
-        console.error("Failed to connect wallet:", error);
-        toast.error("Failed to connect wallet!");
+    try {
+      const res = await (window as any).diam.connect();
+      const address: any = res.message[0];
+      setAddress(address);
+      const response = await fetch("http://localhost:8000/storeAddress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ address }),
       });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Wallet Connected!");
+      } else {
+        toast.error("Failed to store wallet address!");
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+      toast.error("Failed to connect wallet!");
+    }
   };
-
   const generateKeypair = async () => {
     try {
       setIsLoading(true);
