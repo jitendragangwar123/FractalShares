@@ -1,4 +1,6 @@
-const asset = require("../models/assetModel");
+const Wallet = require("../models/wallet");
+const Property = require("../models/propertyDetails");
+const Transaction = require("../models/transactions");
 
 
 const {
@@ -11,13 +13,85 @@ const {
 
 
 const { Horizon } = require("diamante-sdk-js");
-
-
 const accountToTimestampMap = new Map();
-
 
 exports.welcomeMsg = async (req, res) => {
     res.status(200).json({ message: "Welcome to FractalShares Application!" });
+};
+
+exports.storeAddress = async (req, res) => {
+    try {
+        const { address } = req.body;
+        const existingWallet = await Wallet.findOne({ address });
+
+
+        if (existingWallet) {
+            return res.status(200).json({ message: "Address already exists" });
+        }
+        const newWallet = new Wallet({ address });
+        await newWallet.save();
+
+
+        res.status(201).json({ message: "Address stored successfully" });
+    } catch (error) {
+        console.error("Error storing address:", error);
+        res.status(500).json({ message: "Error storing address" });
+    }
+};
+
+
+exports.getPropertyDetails = async (req, res) => {
+    try {
+        const properties = await Property.find();
+        res.status(200).json(properties);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch properties" });
+    }
+};
+
+
+exports.getPropertyDetailsByName = async (req, res) => {
+    const { name } = req.query;
+    try {
+        let properties;
+        if (name) {
+            properties = await Property.find({ name: new RegExp(name, "i") });
+        } else {
+            properties = await Property.find();
+        }
+        res.status(200).json(properties);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch properties" });
+    }
+};
+
+
+exports.storetTransactionsData = async (req, res) => {
+    try {
+        const { txnHash, investorAddress, tokenAmount, diamAmount, url } = req.body;
+        const newTransaction = new Transaction({
+            txnHash,
+            investorAddress,
+            tokenAmount,
+            diamAmount,
+            url,
+        });
+        const savedTransaction = await newTransaction.save();
+        res.json(savedTransaction);
+    } catch (error) {
+        console.error("Error saving transaction:", error);
+        res.status(500).json({ error: "Failed to save transaction" });
+    }
+};
+
+
+exports.getTransactionsData = async (req, res) => {
+    try {
+        const transactionData = await Transaction.find();
+        res.status(200).json(transactionData);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch properties" });
+    }
 };
 
 
@@ -139,7 +213,9 @@ exports.createTrustline = async (req, res) => {
 
 
         try {
-            const receiverAccount = await server.loadAccount(receiverKeypair.publicKey());
+            const receiverAccount = await server.loadAccount(
+                receiverKeypair.publicKey()
+            );
             const changeTrustTransaction = new TransactionBuilder(receiverAccount, {
                 fee: 100,
                 networkPassphrase: Networks.TESTNET,
@@ -155,11 +231,13 @@ exports.createTrustline = async (req, res) => {
 
 
             changeTrustTransaction.sign(receiverKeypair);
-            const changeTrustResult = await server.submitTransaction(changeTrustTransaction);
+            const changeTrustResult = await server.submitTransaction(
+                changeTrustTransaction
+            );
             console.log("Change Trust Result:", changeTrustResult);
             res.status(200).json({
                 message: "ChangeTrustLine successfully!",
-                changeTrustResult
+                changeTrustResult,
             });
         } catch (changeTrustError) {
             console.error("Change Trust Operation Error:", changeTrustError);
@@ -175,31 +253,24 @@ exports.createTrustline = async (req, res) => {
 };
 
 
-
-
-
-
 exports.issueAssets = async (req, res) => {
     try {
-        const { issuerSecret, receiverSecret, assetName, amount } = req.body;
+        const { issuerSecret, receiverPublicKey, assetName, amount } = req.body;
 
 
-        if (!issuerSecret || !receiverSecret || !assetName || !amount) {
+        if (!issuerSecret || !receiverPublicKey || !assetName || !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
-
-
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
-        const receiverKeypair = Keypair.fromSecret(receiverSecret);
         const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
 
 
         try {
             const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
-            const timestamp = accountToTimestampMap.get(receiverKeypair.publicKey());
+            const timestamp = accountToTimestampMap.get(receiverPublicKey);
             console.log("timestamp", timestamp);
-            console.log("difference", Date.now() - timestamp)
+            console.log("difference", Date.now() - timestamp);
 
 
             const paymentTransaction = new TransactionBuilder(issuerAccount, {
@@ -208,7 +279,7 @@ exports.issueAssets = async (req, res) => {
             })
                 .addOperation(
                     Operation.payment({
-                        destination: receiverKeypair.publicKey(),
+                        destination: receiverPublicKey,
                         asset: assetDetails,
                         amount: amount,
                     })
@@ -220,7 +291,7 @@ exports.issueAssets = async (req, res) => {
             paymentTransaction.sign(issuerKeypair);
             const paymentResult = await server.submitTransaction(paymentTransaction);
             console.log("Payment Result:", paymentResult);
-            accountToTimestampMap.set(receiverKeypair.publicKey(), Date.now());
+            accountToTimestampMap.set(receiverPublicKey, Date.now());
             res.status(200).json({
                 message: "Investment successful",
                 paymentResult,
@@ -245,7 +316,9 @@ exports.calculateYield = async (req, res) => {
 
 
         if (!principal || !annualRate || !days) {
-            return res.status(400).json({ error: "Missing required parameters: principal, annualRate, and days" });
+            return res.status(400).json({
+                error: "Missing required parameters: principal, annualRate, and days",
+            });
         }
 
 
@@ -254,28 +327,35 @@ exports.calculateYield = async (req, res) => {
         const investmentDays = parseInt(days);
 
 
-        if (isNaN(principalAmount) || isNaN(annualInterestRate) || isNaN(investmentDays)) {
-            return res.status(400).json({ error: "Invalid parameter values: principal, annualRate, and days must be numbers" });
+        if (
+            isNaN(principalAmount) ||
+            isNaN(annualInterestRate) ||
+            isNaN(investmentDays)
+        ) {
+            return res.status(400).json({
+                error:
+                    "Invalid parameter values: principal, annualRate, and days must be numbers",
+            });
         }
 
 
         const dailyRate = annualInterestRate / 365 / 100;
-        const totalAmount = principalAmount * Math.pow(1 + dailyRate, investmentDays);
+        const totalAmount =
+            principalAmount * Math.pow(1 + dailyRate, investmentDays);
         const yieldAmount = totalAmount - principalAmount;
+
 
         console.log("Yield Amount:", yieldAmount);
 
 
         res.status(200).json({
-            yieldAmount: yieldAmount.toFixed(0)
+            yieldAmount: yieldAmount.toFixed(0),
         });
     } catch (error) {
         console.error("Error calculating yield:", error);
         res.status(500).json({ error: error.message });
     }
 };
-
-
 
 
 exports.transferAssets = async (req, res) => {
