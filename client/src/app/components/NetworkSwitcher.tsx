@@ -70,7 +70,7 @@ export function NetworkSwitcher() {
          {selectedNetwork
            ? networks.find((network) => network.value === selectedNetwork)
              ?.label
-           : "Select Network..."}
+           : "Diam Testnet"}
          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
        </Button>
      </PopoverTrigger>
