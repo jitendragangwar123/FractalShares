@@ -58,7 +58,7 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
       const res = await (window as any).diam.connect();
       const address: any = res.message[0];
       setAddress(address);
-      const response = await fetch("http://localhost:8000/storeAddress", {
+      const response = await fetch("https://fractal-shares-back-end.vercel.app/storeAddress", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://fractal-shares.vercel.app/createKeyPair",
+        "https://fractal-shares-back-end.vercel.app/createKeyPair",
         {
           method: "POST",
         }
@@ -105,7 +105,7 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        "https://fractal-shares.vercel.app/generatePublicKey",
+        "https://fractal-shares-back-end.vercel.app/generatePublicKey",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,7 +128,7 @@ const ConnectModal = ({ isOpen, onClose, setAddress }: Props) => {
       setIsLoading(true);
       toast.loading("Wait for Transactions.....");
       const response = await fetch(
-        "https://fractal-shares.vercel.app/fundDiamTokens",
+        "https://fractal-shares-back-end.vercel.app/fundDiamTokens",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
