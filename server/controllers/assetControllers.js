@@ -13,11 +13,15 @@ const {
 
 
 const { Horizon } = require("diamante-sdk-js");
+
+
 const accountToTimestampMap = new Map();
+
 
 exports.welcomeMsg = async (req, res) => {
     res.status(200).json({ message: "Welcome to FractalShares Application!" });
 };
+
 
 exports.storeAddress = async (req, res) => {
     try {
@@ -40,7 +44,7 @@ exports.storeAddress = async (req, res) => {
 };
 
 
-exports.getPropertyDetails = async (req, res) => {
+exports.getPropertyDatails = async (req, res) => {
     try {
         const properties = await Property.find();
         res.status(200).json(properties);
@@ -50,7 +54,7 @@ exports.getPropertyDetails = async (req, res) => {
 };
 
 
-exports.getPropertyDetailsByName = async (req, res) => {
+exports.getPropertyDatailsByName = async (req, res) => {
     const { name } = req.query;
     try {
         let properties;
@@ -66,7 +70,153 @@ exports.getPropertyDetailsByName = async (req, res) => {
 };
 
 
-exports.storetTransactionsData = async (req, res) => {
+
+
+
+
+exports.getPropertiesByUserAddress = async (req, res) => {
+    const { userAddress } = req.query;
+
+
+    try {
+        const properties = await Property.find({
+            "userData.userAddress": userAddress,
+        });
+
+
+        const userProperties = properties.map((property) => {
+            const userData = property.userData.find(
+                (user) => user.userAddress === userAddress
+            );
+            return {
+                ...property.toObject(),
+                userData,
+            };
+        });
+
+
+        if (userProperties.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "No properties found for this user." });
+        }
+
+
+        res.status(200).json(properties);
+    } catch (error) {
+        console.error("Error fetching properties:", error);
+        res.status(500).json({ message: "Server error." });
+    }
+};
+
+
+exports.updateHoldingTokens = async (req, res) => {
+    const propertyId = req.params.id;
+    const { userAddress, earnedYield, value, holdingTokens } = req.body;
+
+
+    console.log(`Updating property data for propertyId: ${propertyId}`);
+    console.log(`Received user data:`, {
+        userAddress,
+        earnedYield,
+        value,
+        holdingTokens,
+    });
+
+
+    try {
+        const property = await Property.findById(propertyId);
+
+
+        if (!property) {
+            console.error("Property not found");
+            return res.status(404).json({ message: "Property not found." });
+        }
+
+
+        let userFound = false;
+
+
+        property.userData = property.userData.map((user) => {
+            if (user.userAddress === userAddress) {
+                console.log(`Existing user found: ${userAddress}`);
+                user.value += value;
+                user.holdingTokens += holdingTokens;
+                userFound = true;
+                user.earnedYield += earnedYield;
+            }
+            return user;
+        });
+
+
+        if (!userFound) {
+            console.log(`New user, adding to property: ${userAddress}`);
+            property.userData.push({
+                userAddress,
+                value,
+                holdingTokens,
+                earnedYield: 0,
+            });
+        }
+
+
+        await property.save();
+        console.log("Property updated successfully");
+        res
+            .status(200)
+            .json({ message: "User data added or updated successfully.", property });
+    } catch (error) {
+        console.error("Error updating property:", error);
+        res.status(500).json({ message: "Server error." });
+    }
+};
+
+
+exports.updateEarnedYields = async (req, res) => {
+    const propertyId = req.params.id;
+    const { userAddress, value, earnedYield } = req.body;
+
+
+    console.log(`Updating property data for propertyId: ${propertyId}`);
+    console.log(`Received user data:`, { userAddress, value, earnedYield });
+
+
+    try {
+        const property = await Property.findById(propertyId);
+
+
+        if (!property) {
+            console.error("Property not found");
+            return res.status(404).json({ message: "Property not found." });
+        }
+
+
+        let userFound = false;
+
+
+        property.userData = property.userData.map((user) => {
+            if (user.userAddress === userAddress) {
+                console.log(`Existing user found: ${userAddress}`);
+                console.log("dab address: ", user.userAddress)
+                user.value += value;
+                user.earnedYield += earnedYield;
+                userFound = true;
+            }
+            return user;
+        });
+        await property.save();
+        console.log("Property updated successfully");
+        res
+            .status(200)
+            .json({ message: "User data added or updated successfully.", property });
+    } catch (error) {
+        console.error("Error updating property:", error);
+        res.status(500).json({ message: "Server error." });
+    }
+};
+
+
+exports.storeTransactionsData = async (req, res) => {
     try {
         const { txnHash, investorAddress, tokenAmount, diamAmount, url } = req.body;
         const newTransaction = new Transaction({
@@ -196,61 +346,6 @@ exports.transferDiamTokens = async (req, res) => {
 };
 
 
-exports.createTrustline = async (req, res) => {
-    try {
-        const { issuerSecret, receiverSecret, amountLimit, assetName } = req.body;
-
-
-        if (!issuerSecret || !receiverSecret || !amountLimit || !assetName) {
-            return res.status(400).json({ error: "Missing required parameters" });
-        }
-
-
-        const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
-        const issuerKeypair = Keypair.fromSecret(issuerSecret);
-        const receiverKeypair = Keypair.fromSecret(receiverSecret);
-        const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
-
-
-        try {
-            const receiverAccount = await server.loadAccount(
-                receiverKeypair.publicKey()
-            );
-            const changeTrustTransaction = new TransactionBuilder(receiverAccount, {
-                fee: 100,
-                networkPassphrase: Networks.TESTNET,
-            })
-                .addOperation(
-                    Operation.changeTrust({
-                        asset: assetDetails,
-                        limit: amountLimit,
-                    })
-                )
-                .setTimeout(100)
-                .build();
-
-
-            changeTrustTransaction.sign(receiverKeypair);
-            const changeTrustResult = await server.submitTransaction(
-                changeTrustTransaction
-            );
-            console.log("Change Trust Result:", changeTrustResult);
-            res.status(200).json({
-                message: "ChangeTrustLine successfully!",
-                changeTrustResult,
-            });
-        } catch (changeTrustError) {
-            console.error("Change Trust Operation Error:", changeTrustError);
-            res.status(500).json({
-                error: "An error occurred during the change trust transaction",
-                details: changeTrustError.response?.data || changeTrustError.message,
-            });
-        }
-    } catch (error) {
-        console.error("Error in issuance of assets:", error);
-        res.status(500).json({ error: error.message });
-    }
-};
 
 
 exports.issueAssets = async (req, res) => {
@@ -357,195 +452,3 @@ exports.calculateYield = async (req, res) => {
     }
 };
 
-
-exports.transferAssets = async (req, res) => {
-    try {
-        const { senderSecret, issuerPublicKey, assetName, amount } = req.body;
-        if (!senderSecret || !issuerPublicKey || !assetName || !amount) {
-            return res.status(400).json({ error: "Missing required parameters" });
-        }
-        const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
-        const senderKeypair = Keypair.fromSecret(senderSecret);
-        const senderPublicKey = senderKeypair.publicKey();
-
-
-        const account = await server.loadAccount(senderPublicKey);
-
-
-        const txnForIssueTrust = new TransactionBuilder(account, {
-            fee: await server.fetchBaseFee(),
-            networkPassphrase: Networks.TESTNET,
-        })
-            .addOperation(
-                Operation.changeTrust({
-                    asset: new Asset(assetName, issuerPublicKey),
-                })
-            )
-            .setTimeout(30)
-            .build();
-
-
-        txnForIssueTrust.sign(senderKeypair);
-        const resForIssueTrust = await server.submitTransaction(txnForIssueTrust);
-
-
-        const transaction = new TransactionBuilder(account, {
-            fee: await server.fetchBaseFee(),
-            networkPassphrase: Networks.TESTNET,
-        })
-            .addOperation(
-                Operation.payment({
-                    destination: issuerPublicKey,
-                    asset: new Asset(assetName, issuerPublicKey),
-                    amount: amount,
-                })
-            )
-            .setTimeout(30)
-            .build();
-
-
-        transaction.sign(senderKeypair);
-        const result = await server.submitTransaction(transaction);
-
-
-        res.json({
-            message: `Payment of ${amount} ${assetName} made to ${issuerPublicKey} successfully`,
-        });
-    } catch (error) {
-        console.error("Error in transferring the assets:", error);
-        res.status(500).json({ error: error.message });
-    }
-};
-
-
-exports.investInAsset = async (req, res) => {
-    try {
-        const {
-            receiverSecret,
-            issuerSecret,
-            amountLimit,
-            assetName,
-            amountAsset,
-            amountDIAM,
-        } = req.body;
-        if (
-            !issuerSecret ||
-            !receiverSecret ||
-            !amountLimit ||
-            !assetName ||
-            !amountAsset ||
-            !amountDIAM
-        ) {
-            return res.status(400).json({ error: "Missing required parameters" });
-        }
-
-
-        const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
-
-
-        const issuerKeypair = Keypair.fromSecret(issuerSecret);
-        const issuerPublicKey = issuerKeypair.publicKey();
-
-
-        const receiverKeypair = Keypair.fromSecret(receiverSecret);
-        const receiverPublicKey = receiverKeypair.publicKey();
-
-
-        const account = await server.loadAccount(receiverPublicKey);
-
-
-        //Change trust operation
-        let changeTrustResult;
-        let paymentResult;
-        let diamPaymentResult;
-
-
-        const transaction = new TransactionBuilder(account, {
-            fee: await server.fetchBaseFee(),
-            networkPassphrase: Networks.TESTNET,
-        })
-            .addOperation(
-                Operation.payment({
-                    destination: issuerPublicKey,
-                    asset: Asset.native(),
-                    amount: amountDIAM,
-                })
-            )
-            .setTimeout(30)
-            .build();
-
-
-        transaction.sign(receiverKeypair);
-        const result = await server.submitTransaction(transaction);
-        console.log(`${amountDIAM} DIAM payment has been done successfully!!`);
-        diamPaymentResult = result;
-
-
-        const assetDetails = new Asset(assetName, issuerPublicKey);
-
-
-        server
-            .loadAccount(receiverPublicKey)
-            .then(function (receiver) {
-                const transaction = new TransactionBuilder(receiver, {
-                    fee: 100,
-                    networkPassphrase: Networks.TESTNET,
-                })
-                    .addOperation(
-                        Operation.changeTrust({
-                            asset: assetDetails,
-                            limit: amountLimit,
-                        })
-                    )
-                    .setTimeout(100)
-                    .build();
-                transaction.sign(receiverKeypair);
-                return server.submitTransaction(transaction);
-            })
-            .then((result) => {
-                console.log(result);
-                changeTrustResult = result;
-                return server.loadAccount(issuerPublicKey);
-            })
-            // Payment operation
-            .then(function (issuer) {
-                const transaction = new TransactionBuilder(issuer, {
-                    fee: 100,
-                    networkPassphrase: Networks.TESTNET,
-                })
-                    .addOperation(
-                        Operation.payment({
-                            destination: receiverPublicKey,
-                            asset: assetDetails,
-                            amount: amountAsset,
-                        })
-                    )
-                    .setTimeout(100)
-                    .build();
-                transaction.sign(issuerKeypair);
-                return server.submitTransaction(transaction);
-            })
-            .then((result) => {
-                console.log(result);
-                paymentResult = result;
-
-
-                res.status(200).json({
-                    message: "Operations successful",
-                    diamPaymentResult,
-                    changeTrustResult,
-                    paymentResult,
-                });
-            })
-            .catch(function (error) {
-                console.error("Error!", error);
-                res.status(500).json({
-                    error: "An error occurred during the transaction process",
-                    details: error.message,
-                });
-            });
-    } catch (error) {
-        console.error("Error in issuance of assets:", error);
-        res.status(500).json({ error: error.message });
-    }
-};

@@ -11,14 +11,21 @@ router
  .post("/fundDiamTokens", assetController.fundDiamTokens)
  .post("/transferDiamTokens", assetController.transferDiamTokens)
  .post("/issueAssets", assetController.issueAssets)
- .post("/transferAssets", assetController.transferAssets)
- .post("/investInAsset", assetController.investInAsset)
- .post("/createTrustline",assetController.createTrustline)
  .post("/calculateYield",assetController.calculateYield)
- .get("/getPropertyDetails",assetController.getPropertyDetails)
- .get("/getPropertyDetailsByName",assetController.getPropertyDetailsByName)
- .post("/storetTransactionsData",assetController.storetTransactionsData)
+ .get("/getPropertyDatails",assetController.getPropertyDatails)
+ .get("/getPropertyDatailsByName",assetController.getPropertyDatailsByName)
+ .post("/storeTransactionsData",assetController.storeTransactionsData)
  .get("/getTransactionsData",assetController.getTransactionsData)
+ .get("/getPropertiesByUserAddress",assetController.getPropertiesByUserAddress)
+ .put("/:id/updateHoldingTokens",assetController.updateHoldingTokens)
+ .put("/:id/updateEarnedYields",assetController.updateEarnedYields)
+
+
 
 
 module.exports = router;
+
+
+
+
+
