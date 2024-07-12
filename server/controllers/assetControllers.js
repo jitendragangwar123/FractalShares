@@ -44,7 +44,7 @@ exports.storeAddress = async (req, res) => {
 };
 
 
-exports.getPropertyDatails = async (req, res) => {
+exports.getPropertyDetails = async (req, res) => {
     try {
         const properties = await Property.find();
         res.status(200).json(properties);
@@ -54,7 +54,7 @@ exports.getPropertyDatails = async (req, res) => {
 };
 
 
-exports.getPropertyDatailsByName = async (req, res) => {
+exports.getPropertyDetailsByName = async (req, res) => {
     const { name } = req.query;
     try {
         let properties;
