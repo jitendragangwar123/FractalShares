@@ -1,5 +1,24 @@
 const mongoose = require('mongoose');
 
+const UserDataSchema = new mongoose.Schema({
+    userAddress: {
+        type: String,
+        required: true
+    },
+    value: {
+        type: Number,
+        required: true
+    },
+    earnedYield: {
+        type: Number,
+        required: true
+    },
+    holdingTokens: {
+        type: Number,
+        required: true
+    }
+}, { _id: false });
+
 const PropertySchema = new mongoose.Schema({
     image: {
         type: String,
@@ -36,10 +55,12 @@ const PropertySchema = new mongoose.Schema({
     status: {
         type: String,
         required: true
-    }
+    },
+    userData: [UserDataSchema]
 });
 
 const PropertyDetails = mongoose.model('Property', PropertySchema);
+
 
 module.exports = PropertyDetails;
 
