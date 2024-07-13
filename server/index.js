@@ -17,5 +17,4 @@ app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 app.use('/', assetRouter);
-
 module.exports = app;
