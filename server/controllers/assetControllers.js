@@ -2,7 +2,6 @@ const Wallet = require("../models/wallet");
 const Property = require("../models/propertyDetails");
 const Transaction = require("../models/transactions");
 
-
 const {
     Keypair,
     TransactionBuilder,
@@ -11,31 +10,23 @@ const {
     Asset,
 } = require("diamante-base");
 
-
 const { Horizon } = require("diamante-sdk-js");
-
-
 const accountToTimestampMap = new Map();
-
 
 exports.welcomeMsg = async (req, res) => {
     res.status(200).json({ message: "Welcome to FractalShares Application!" });
 };
-
 
 exports.storeAddress = async (req, res) => {
     try {
         const { address } = req.body;
         const existingWallet = await Wallet.findOne({ address });
 
-
         if (existingWallet) {
             return res.status(200).json({ message: "Address already exists" });
         }
         const newWallet = new Wallet({ address });
         await newWallet.save();
-
-
         res.status(201).json({ message: "Address stored successfully" });
     } catch (error) {
         console.error("Error storing address:", error);
@@ -86,13 +77,11 @@ exports.getPropertiesByUserAddress = async (req, res) => {
             };
         });
 
-
         if (userProperties.length === 0) {
             return res
                 .status(404)
                 .json({ message: "No properties found for this user." });
         }
-
         res.status(200).json(properties);
     } catch (error) {
         console.error("Error fetching properties:", error);
@@ -105,25 +94,12 @@ exports.updateHoldingTokens = async (req, res) => {
     const propertyId = req.params.id;
     const { userAddress, earnedYield, value, holdingTokens } = req.body;
 
-
-    console.log(`Updating property data for propertyId: ${propertyId}`);
-    console.log(`Received user data:`, {
-        userAddress,
-        earnedYield,
-        value,
-        holdingTokens,
-    });
-
-
     try {
         const property = await Property.findById(propertyId);
-
-
         if (!property) {
             console.error("Property not found");
             return res.status(404).json({ message: "Property not found." });
         }
-
         let userFound = false;
         property.userData = property.userData.map((user) => {
             if (user.userAddress === userAddress) {
@@ -136,7 +112,6 @@ exports.updateHoldingTokens = async (req, res) => {
             return user;
         });
 
-
         if (!userFound) {
             console.log(`New user, adding to property: ${userAddress}`);
             property.userData.push({
@@ -146,8 +121,6 @@ exports.updateHoldingTokens = async (req, res) => {
                 earnedYield: 0,
             });
         }
-
-
         await property.save();
         console.log("Property updated successfully");
         res
@@ -163,22 +136,13 @@ exports.updateHoldingTokens = async (req, res) => {
 exports.updateEarnedYields = async (req, res) => {
     const propertyId = req.params.id;
     const { userAddress, value, earnedYield } = req.body;
-
-
-    console.log(`Updating property data for propertyId: ${propertyId}`);
-    console.log(`Received user data:`, { userAddress, value, earnedYield });
-
-
     try {
         const property = await Property.findById(propertyId);
-
 
         if (!property) {
             console.error("Property not found");
             return res.status(404).json({ message: "Property not found." });
         }
-
-
         let userFound = false;
         property.userData = property.userData.map((user) => {
             if (user.userAddress === userAddress) {
@@ -298,8 +262,6 @@ exports.transferDiamTokens = async (req, res) => {
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const senderKeypair = Keypair.fromSecret(senderSecret);
         const senderPublicKey = senderKeypair.publicKey();
-
-
         const account = await server.loadAccount(senderPublicKey);
         const transaction = new TransactionBuilder(account, {
             fee: await server.fetchBaseFee(),
@@ -315,15 +277,11 @@ exports.transferDiamTokens = async (req, res) => {
             .setTimeout(30)
             .build();
 
-
         transaction.sign(senderKeypair);
         const result = await server.submitTransaction(transaction);
-        console.log(
-            `Payment made from ${senderPublicKey} to ${receiverPublicKey} with amount ${amount}`,
-            result
-        );
-        res.json({
-            message: `Payment of ${amount} DIAM made to ${receiverPublicKey} successfully`,
+        res.status(200).json({
+            message: "Transaction Successful",
+            result,
         });
     } catch (error) {
         console.error("Error in transfer diam tokens:", error);
@@ -331,29 +289,18 @@ exports.transferDiamTokens = async (req, res) => {
     }
 };
 
-
-
-
 exports.issueAssets = async (req, res) => {
     try {
         const { issuerSecret, receiverPublicKey, assetName, amount } = req.body;
-
-
         if (!issuerSecret || !receiverPublicKey || !assetName || !amount) {
             return res.status(400).json({ error: "Missing required parameters" });
         }
         const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
         const issuerKeypair = Keypair.fromSecret(issuerSecret);
         const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
-
-
         try {
             const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
             const timestamp = accountToTimestampMap.get(receiverPublicKey);
-            console.log("timestamp", timestamp);
-            console.log("difference", Date.now() - timestamp);
-
-
             const paymentTransaction = new TransactionBuilder(issuerAccount, {
                 fee: 100,
                 networkPassphrase: Networks.TESTNET,
@@ -368,10 +315,8 @@ exports.issueAssets = async (req, res) => {
                 .setTimeout(100)
                 .build();
 
-
             paymentTransaction.sign(issuerKeypair);
             const paymentResult = await server.submitTransaction(paymentTransaction);
-            console.log("Payment Result:", paymentResult);
             accountToTimestampMap.set(receiverPublicKey, Date.now());
             res.status(200).json({
                 message: "Investment successful",
@@ -394,20 +339,14 @@ exports.issueAssets = async (req, res) => {
 exports.calculateYield = async (req, res) => {
     try {
         const { principal, annualRate, days } = req.body;
-
-
         if (!principal || !annualRate || !days) {
             return res.status(400).json({
                 error: "Missing required parameters: principal, annualRate, and days",
             });
         }
-
-
         const principalAmount = parseFloat(principal);
         const annualInterestRate = parseFloat(annualRate);
         const investmentDays = parseInt(days);
-
-
         if (
             isNaN(principalAmount) ||
             isNaN(annualInterestRate) ||
@@ -418,17 +357,10 @@ exports.calculateYield = async (req, res) => {
                     "Invalid parameter values: principal, annualRate, and days must be numbers",
             });
         }
-
-
         const dailyRate = annualInterestRate / 365 / 100;
         const totalAmount =
             principalAmount * Math.pow(1 + dailyRate, investmentDays);
         const yieldAmount = totalAmount - principalAmount;
-
-
-        console.log("Yield Amount:", yieldAmount);
-
-
         res.status(200).json({
             yieldAmount: yieldAmount.toFixed(0),
         });
