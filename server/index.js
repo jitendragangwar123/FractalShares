@@ -3,6 +3,11 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const assetRouter = require("./routes/assetRoute");
 const cors = require("cors");
+const dotenv = require("dotenv");
+const connectDB = require("./db/connect");
+
+dotenv.config();
+
 const app = express();
 
 const corsOptions = {
@@ -17,4 +22,18 @@ app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
 app.use('/', assetRouter);
-module.exports = app;
+
+const port = process.env.PORT || 8000;
+
+const start = async () => {
+    try {
+        await connectDB(process.env.MONGODB_URI);
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+start();
