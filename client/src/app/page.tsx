@@ -65,7 +65,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Marketplace <UpRightArrowIcon />{" "}
+              Marketplace {" "}
             </h2>
             <p className="text-sm-2 opacity-75">
               By leveraging the power of blockchain technology, our platform
@@ -80,7 +80,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Portfolio <UpRightArrowIcon />{" "}
+              Portfolio {" "}
             </h2>
             <p className="text-sm-2 opacity-75">
               Investors can effortlessly manage and track their real estate
@@ -95,7 +95,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Investor <UpRightArrowIcon />
+              Investor {" "}
             </h2>
             <p className="text-sm-2 opacity-75">
               Investors can easily buy, sell, and trade property tokens,
@@ -111,10 +111,10 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className=" flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Yield Farming <UpRightArrowIcon />{" "}
+              Yield Farming {" "}
             </h2>
             <p className="text-sm-2 opacity-75">
-              Our real estate tokenization platform introduces an innovative
+              Our real-estate tokenization platform introduces an innovative
               yield farming strategy designed to maximize earnings for
               investors, offering a lucrative opportunity for them to grow their
               wealth.{" "}
