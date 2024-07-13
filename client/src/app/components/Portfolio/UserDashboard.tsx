@@ -4,7 +4,6 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
-
 type InvestmentBanner = {
   earnedYield: number;
   value: number;
@@ -134,8 +133,8 @@ const PropertyCard: React.FC<
   return (
     <div className="max-w-sm rounded-lg overflow-hidden shadow-lg border border-gray-300 transform transition duration-300 hover:scale-105 hover:shadow-xl">
       <img className="w-full h-48 object-cover" src={image} alt="Property" />
-      <div className="p-6">
-        <div className="flex items-center mb-4">
+      <div className="p-4">
+        <div className="flex items-center mb-2">
           <span className="font-bold text-2xl">{name}</span>
         </div>
         <div className="flex items-center mb-4 text-gray-400">
@@ -143,33 +142,32 @@ const PropertyCard: React.FC<
           <span>{address}</span>
         </div>
         <div className="flex flex-col justify-between mb-2">
-          <div className="flex items-center justify-between text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-gray-400 mb-1">
             <span>Value:</span>
             <span className="text-gray-500 text-lg">${value}</span>
           </div>
-          <div className="flex items-center justify-between text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-gray-400 mb-1">
             <span>Earned Yield:</span>
             <span className="text-gray-500 text-lg">${earnedYield}</span>
           </div>
-          <div className="flex items-center justify-between text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-gray-400 mb-1">
             <span>Yield Percentage:</span>
             <span className="text-gray-500 text-lg">{yieldPercentage}%</span>
           </div>
-          <div className="flex items-center justify-between text-gray-400 mb-2">
+          <div className="flex items-center justify-between text-gray-400 mb-1">
             <span>Holding Tokens:</span>
             <span className="text-gray-500 text-lg">{holdingTokens}</span>
           </div>
-          <hr className="my-4 border-gray-300" />
+          <hr className="my-1 border-gray-300" />
         </div>
-        <div className="flex flex-row gap-2">
-          <button
-            className="w-full bg-blue-500 text-white font-bold py-2 px-2 rounded hover:bg-blue-700 transition duration-300"
-            onClick={handleClaimYield}
-            disabled={isLoading}
-          >
-            {isLoading ? "Claiming..." : "Claim Yield"}
-          </button>
-        </div>
+
+        <button
+          className="w-full bg-blue-500 text-white font-bold py-2 px-2 rounded hover:bg-blue-700 transition duration-300"
+          onClick={handleClaimYield}
+          disabled={isLoading}
+        >
+          {isLoading ? "Claiming..." : "Claim Yield"}
+        </button>
       </div>
     </div>
   );
@@ -296,7 +294,7 @@ function PortfolioOverview() {
           My Assets
         </h1>
       </div>
-      <div className="flex flex-wrap gap-4 p-4 pr-80 mr-20 justify-start">
+      <div className="flex justify-start gap-4 p-4 ml-20 w-full ">
         {properties.map((property) => (
           <PropertyCard
             key={property._id}

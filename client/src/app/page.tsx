@@ -8,7 +8,6 @@ import UpRightArrowIcon from "./svg/UpRightArrowIcon";
 import Features from "~/Features/Features";
 
 export default function Home() {
- 
   return (
     <main className="">
       <Header />
@@ -25,7 +24,10 @@ export default function Home() {
               A simple way for Tokenization of the Real World Assets
             </p>
             <div className="flex gap-4">
-              <Link href="https://github.com/jitendragangwar123/FractalShares" legacyBehavior>
+              <Link
+                href="https://github.com/jitendragangwar123/FractalShares"
+                legacyBehavior
+              >
                 <a className="flex justify-center items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-md font-medium border-2 border-blue-600 shadow-md hover:bg-blue-600 hover:shadow-lg active:bg-blue-800 active:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-700 ease-in-out">
                   <span>Welcome to FTS </span>
                   <span>
@@ -36,7 +38,9 @@ export default function Home() {
               <Link href="/marketplace" legacyBehavior>
                 <a className="flex justify-center items-center gap-2 px-4 py-2 text-sm bg-white text-black rounded-md font-medium border-2 border-blue-600 shadow-md hover:bg-blue-600 hover:shadow-lg active:bg-white active:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-700 ease-in-out">
                   <span>Start Exploring</span>
-                  <span><UpRightArrowIcon /></span>
+                  <span>
+                    <UpRightArrowIcon />
+                  </span>
                 </a>
               </Link>
             </div>
@@ -60,9 +64,13 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">Marketplace{" "} <UpRightArrowIcon /> </h2>
+            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
+              Marketplace <UpRightArrowIcon />{" "}
+            </h2>
             <p className="text-sm-2 opacity-75">
-            By leveraging the power of blockchain technology, our platform enables the fractional ownership of properties, making real estate investment more accessible and liquid than ever before.{" "}
+              By leveraging the power of blockchain technology, our platform
+              enables the fractional ownership of properties, making real estate
+              investment more accessible and liquid than ever before.{" "}
             </p>
           </a>
           <a
@@ -71,9 +79,13 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">Portfolio{" "} <UpRightArrowIcon /> </h2>
+            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
+              Portfolio <UpRightArrowIcon />{" "}
+            </h2>
             <p className="text-sm-2 opacity-75">
-            Investors can effortlessly manage and track your real estate investments. Simply tap the portfolio icon on the top bar to access the current value of your holdings.  {" "}
+              Investors can effortlessly manage and track their real estate
+              investments. Simply tap the portfolio icon on the top bar to
+              quickly access the current value of your holdings.{" "}
             </p>
           </a>
           <a
@@ -82,9 +94,13 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">Investor{" "} <UpRightArrowIcon /></h2>
+            <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
+              Investor <UpRightArrowIcon />
+            </h2>
             <p className="text-sm-2 opacity-75">
-            Investors can easily buy, sell, and trade property tokens, enjoying transparency, security, and efficiency throughout the process.{" "}
+              Investors can easily buy, sell, and trade property tokens,
+              enjoying unparalleled transparency, robust security, and enhanced
+              efficiency throughout the entire process.{" "}
             </p>
           </a>
 
@@ -94,9 +110,14 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <h2 className=" flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">Transparency {" "} <UpRightArrowIcon /> </h2>
+            <h2 className=" flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
+              Yield Farming <UpRightArrowIcon />{" "}
+            </h2>
             <p className="text-sm-2 opacity-75">
-            Our platform harnesses the power of blockchain technology to bring unparalleled transparency to the real estate market.This transparency builds trust among investors.{" "}
+              Our real estate tokenization platform introduces an innovative
+              yield farming strategy designed to maximize earnings for
+              investors, offering a lucrative opportunity for them to grow their
+              wealth.{" "}
             </p>
           </a>
         </div>

@@ -67,8 +67,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <div className="max-w-sm rounded-lg mt-5 mb-10 ml-5 font-serif overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-300">
       <img className="w-full h-48 object-cover" src={image} alt="Property" />
-      <div className="p-5">
-        <div className="flex items-center mb-4">
+      <div className="p-4">
+        <div className="flex items-center mb-2">
           <span className="font-bold text-2xl">{name}</span>
         </div>
         <div className="flex items-center mb-4 text-gray-400">
@@ -76,7 +76,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
           <span>{address}</span>
         </div>
         <p className="text-gray-500 text-base mb-4">{description}</p>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <div>
             <span className="text-gray-400">Token Price</span>
           </div>
@@ -87,7 +87,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             <span className="text-gray-400">APY</span>
           </div>
         </div>
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center justify-between">
             <FaDollarSign className="text-green-600" />
             <span className="font-bold text-xl">{price}</span>
@@ -208,7 +208,7 @@ const PropertyGallery: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap gap-4 p-4">
+      <div className="flex flex-wrap gap-2 p-4">
         {filteredProperties.map((property, index) => (
           <PropertyCard
             key={index}
