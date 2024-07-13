@@ -123,7 +123,7 @@ const PropertyGallery: React.FC = () => {
     const fetchProperties = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/getPropertyDatails"
+          "https://fractal-shares-back-end.vercel.app/getPropertyDatails"
         );
         const data = await response.json();
         setProperties(data);

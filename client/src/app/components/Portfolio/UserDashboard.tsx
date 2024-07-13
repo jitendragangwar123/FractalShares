@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { FaMapMarkerAlt } from "react-icons/fa";
-// import InvestmentDetails from "~/Portfolio/InvestmentDetails";
+
 
 type InvestmentBanner = {
   earnedYield: number;
@@ -66,7 +66,7 @@ const PropertyCard: React.FC<
 
       // Step 2: Calculate yield
       const calculateYield = await fetch(
-        "http://localhost:8000/calculateYield",
+        "https://fractal-shares-back-end.vercel.app/calculateYield",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -87,7 +87,7 @@ const PropertyCard: React.FC<
 
       // Step 3: update Yield Amount
       const updateYieldsAmount = await fetch(
-        `http://localhost:8000/${_id}/updateEarnedYields`,
+        `https://fractal-shares-back-end.vercel.app/${_id}/updateEarnedYields`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -105,7 +105,7 @@ const PropertyCard: React.FC<
 
       // Step 4: Transfer DIAM tokens
       const diamTransfer = await fetch(
-        "http://localhost:8000/transferDiamTokens",
+        "https://fractal-shares-back-end.vercel.app/transferDiamTokens",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -193,7 +193,7 @@ function PortfolioOverview() {
       setUserAddress(userAddress);
 
       const response = await fetch(
-        `http://localhost:8000/getPropertiesByUserAddress?userAddress=${userAddress}`
+        `https://fractal-shares-back-end.vercel.app/getPropertiesByUserAddress?userAddress=${userAddress}`
       );
       if (!response.ok) {
         toast.error("Investor don't have any asset");

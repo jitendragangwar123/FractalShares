@@ -94,7 +94,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       }
 
       // Step 4: Issue assets
-      const issueAsset = await fetch("http://localhost:8000/issueAssets", {
+      const issueAsset = await fetch("https://fractal-shares-back-end.vercel.app/issueAssets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -138,7 +138,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       );
       if (paymentResp.response.status === 200) {
         const storedTransactionsData = await fetch(
-          "http://localhost:8000/storeTransactionsData",
+          "https://fractal-shares-back-end.vercel.app/storeTransactionsData",
           {
             method: "POST",
             headers: {
@@ -157,7 +157,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         await storedTransactionsData.json();
 
         const updatePropertyData = await fetch(
-          `http://localhost:8000/${_id}/updateHoldingTokens`,
+          `https://fractal-shares-back-end.vercel.app/${_id}/updateHoldingTokens`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -275,7 +275,7 @@ const PurchaseAssets: React.FC = () => {
     try {
       const name = "Prestige Polygon";
       const response = await fetch(
-        `http://localhost:8000/getPropertyDatailsByName?name=${encodeURIComponent(
+        `https://fractal-shares-back-end.vercel.app/getPropertyDatailsByName?name=${encodeURIComponent(
           name
         )}`
       );

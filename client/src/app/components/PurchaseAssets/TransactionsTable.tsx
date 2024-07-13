@@ -24,7 +24,7 @@ function TransactionsTable() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:8000/getTransactionsData",
+        "https://fractal-shares-back-end.vercel.app/getTransactionsData",
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
