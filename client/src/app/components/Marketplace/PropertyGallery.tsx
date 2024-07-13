@@ -67,7 +67,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   return (
     <div className="max-w-sm rounded-lg mt-5 mb-10 ml-5 font-serif overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl border-2 border-gray-300">
       <img className="w-full h-48 object-cover" src={image} alt="Property" />
-      <div className="p-4">
+      <div className="p-2">
         <div className="flex items-center mb-2">
           <span className="font-bold text-2xl">{name}</span>
         </div>

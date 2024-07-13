@@ -57,7 +57,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mb-32 grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-center lg:text-left lg:max-w-5xl">
+        <div className="mb-25 grid md:grid-cols-2 lg:grid-cols-4 gap-4 text-center lg:text-left lg:max-w-5xl">
           <a
             href="/"
             className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
@@ -65,7 +65,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Marketplace {" "}
+              Marketplace <UpRightArrowIcon />
             </h2>
             <p className="text-sm-2 opacity-75">
               By leveraging the power of blockchain technology, our platform
@@ -80,7 +80,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Portfolio {" "}
+              Portfolio <UpRightArrowIcon />
             </h2>
             <p className="text-sm-2 opacity-75">
               Investors can effortlessly manage and track their real estate
@@ -95,7 +95,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className="flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Investor {" "}
+              Investor <UpRightArrowIcon />
             </h2>
             <p className="text-sm-2 opacity-75">
               Investors can easily buy, sell, and trade property tokens,
@@ -111,7 +111,7 @@ export default function Home() {
             rel="noopener noreferrer"
           >
             <h2 className=" flex justify-center items-center gap-2 mb-3 text-2xl font-semibold">
-              Yield Farming {" "}
+              Yield Farming <UpRightArrowIcon />
             </h2>
             <p className="text-sm-2 opacity-75">
               Our real-estate tokenization platform introduces an innovative

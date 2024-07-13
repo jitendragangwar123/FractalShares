@@ -131,7 +131,7 @@ const PropertyCard: React.FC<
   };
 
   return (
-    <div className="max-w-sm rounded-lg overflow-hidden shadow-lg border border-gray-300 transform transition duration-300 hover:scale-105 hover:shadow-xl">
+    <div className="max-w-sm rounded-lg ml-20 overflow-hidden shadow-lg border border-gray-300 transform transition duration-300 hover:scale-105 hover:shadow-xl">
       <img className="w-full h-48 object-cover" src={image} alt="Property" />
       <div className="p-4">
         <div className="flex items-center mb-2">
@@ -289,12 +289,12 @@ function PortfolioOverview() {
         </div>
       )}
 
-      <div className="flex justify-start w-full max-w-6xl mt-4">
+      <div className="flex justify-start w-full max-w-6xl mr-10 mt-4">
         <h1 className="text-3xl md:text-4xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200">
           My Assets
         </h1>
       </div>
-      <div className="flex justify-start gap-4 p-4 ml-20 w-full ">
+      <div className="flex justify-start w-full mt-5 ml-20">
         {properties.map((property) => (
           <PropertyCard
             key={property._id}
