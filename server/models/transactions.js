@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const transactionSchema = new mongoose.Schema({
     txnHash: {
         type: String,
@@ -17,6 +18,10 @@ const transactionSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    action: {
+        type: String,
+        required: true,
+    },
     url: {
         type: String,
         required: true,
@@ -26,7 +31,6 @@ const transactionSchema = new mongoose.Schema({
         default: Date.now,
     },
 });
-
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

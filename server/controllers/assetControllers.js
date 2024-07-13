@@ -69,20 +69,12 @@ exports.getPropertyDetailsByName = async (req, res) => {
     }
 };
 
-
-
-
-
-
 exports.getPropertiesByUserAddress = async (req, res) => {
     const { userAddress } = req.query;
-
-
     try {
         const properties = await Property.find({
             "userData.userAddress": userAddress,
         });
-
 
         const userProperties = properties.map((property) => {
             const userData = property.userData.find(
@@ -100,7 +92,6 @@ exports.getPropertiesByUserAddress = async (req, res) => {
                 .status(404)
                 .json({ message: "No properties found for this user." });
         }
-
 
         res.status(200).json(properties);
     } catch (error) {
@@ -133,10 +124,7 @@ exports.updateHoldingTokens = async (req, res) => {
             return res.status(404).json({ message: "Property not found." });
         }
 
-
         let userFound = false;
-
-
         property.userData = property.userData.map((user) => {
             if (user.userAddress === userAddress) {
                 console.log(`Existing user found: ${userAddress}`);
@@ -192,8 +180,6 @@ exports.updateEarnedYields = async (req, res) => {
 
 
         let userFound = false;
-
-
         property.userData = property.userData.map((user) => {
             if (user.userAddress === userAddress) {
                 console.log(`Existing user found: ${userAddress}`);
@@ -218,12 +204,13 @@ exports.updateEarnedYields = async (req, res) => {
 
 exports.storeTransactionsData = async (req, res) => {
     try {
-        const { txnHash, investorAddress, tokenAmount, diamAmount, url } = req.body;
+        const { txnHash, investorAddress, tokenAmount, diamAmount, action, url } = req.body;
         const newTransaction = new Transaction({
             txnHash,
             investorAddress,
             tokenAmount,
             diamAmount,
+            action,
             url,
         });
         const savedTransaction = await newTransaction.save();
@@ -233,7 +220,6 @@ exports.storeTransactionsData = async (req, res) => {
         res.status(500).json({ error: "Failed to save transaction" });
     }
 };
-
 
 exports.getTransactionsData = async (req, res) => {
     try {
