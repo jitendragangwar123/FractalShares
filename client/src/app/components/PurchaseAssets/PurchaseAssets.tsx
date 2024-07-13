@@ -275,7 +275,7 @@ const PurchaseAssets: React.FC = () => {
     try {
       const name = "Prestige Polygon";
       const response = await fetch(
-        `https://fractal-shares-back-end.vercel.app/getPropertyDatailsByName?name=${encodeURIComponent(
+        `https://fractal-shares-back-end.vercel.app/getPropertyDetailsByName?name=${encodeURIComponent(
           name
         )}`
       );
