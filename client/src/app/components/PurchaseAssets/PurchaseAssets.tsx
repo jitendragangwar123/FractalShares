@@ -106,7 +106,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       });
 
       const assetIssuanceResult = await issueAsset.json();
-      const TxnHash = assetIssuanceResult.paymentResult.hash;
+      const txnHash = assetIssuanceResult.paymentResult.hash;
 
       if (!assetIssuanceResult) {
         toast.dismiss();
@@ -145,11 +145,12 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              txnHash: TxnHash,
+              txnHash: txnHash,
               investorAddress: receiverPublicKey,
               tokenAmount: quantity,
               diamAmount: (quantity * price).toString(),
-              url: `https://testnetexplorer.diamcircle.io/about-txHash/${TxnHash}`,
+              action:"Asset Bought",
+              url: `https://testnetexplorer.diamcircle.io/about-txHash/${txnHash}`,
             }),
           }
         );

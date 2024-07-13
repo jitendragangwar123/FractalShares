@@ -10,6 +10,7 @@ interface Transaction {
   investorAddress: string;
   tokenAmount: number;
   diamAmount: number;
+  action: string;
   url: string;
 }
 
@@ -120,6 +121,9 @@ function TransactionsTable() {
                     DIAM Amount
                   </th>
                   <th className="border-b p-4 text-gray-800 dark:text-gray-200">
+                    Action
+                  </th>
+                  <th className="border-b p-4 text-gray-800 dark:text-gray-200">
                     Transaction URL
                   </th>
                 </tr>
@@ -152,6 +156,9 @@ function TransactionsTable() {
                       </td>
                       <td className="border-b p-4 text-gray-800 dark:text-gray-200">
                         {txn.diamAmount}
+                      </td>
+                      <td className="border-b p-4 text-gray-800 dark:text-gray-200">
+                        {txn.action}
                       </td>
                       <td className="border-b p-4 text-gray-800 dark:text-gray-200">
                         <Link href={txn.url} legacyBehavior>

@@ -119,6 +119,29 @@ const PropertyCard: React.FC<
         throw new Error("Error transferring DIAM tokens.");
       }
 
+      const diamTransferResponse = await diamTransfer.json();
+      console.log("diamTransferResponse: ", diamTransferResponse);
+      const txnHash = diamTransferResponse.result.hash;
+
+      const storedTransactionsData = await fetch(
+        "http://localhost:8000/storeTransactionsData",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            txnHash: txnHash,
+            investorAddress: investorPublicKey,
+            tokenAmount: holdingTokens,
+            diamAmount: yieldAmounts.toString(),
+            action: "Yield Claimed",
+            url: `https://testnetexplorer.diamcircle.io/about-txHash/${txnHash}`,
+          }),
+        }
+      );
+
+      await storedTransactionsData.json();
       toast.dismiss();
       toast.success("Yield claimed successfully!");
       setIsLoading(false);
