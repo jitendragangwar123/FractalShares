@@ -57,7 +57,7 @@ const PropertyCard: React.FC<
   const [yieldAmount, setYieldAmount] = useState("");
 
   const handleClaimYield = async () => {
-    const days = 3000;
+    const days = 2000;
     const issuerSecret = process.env.NEXT_PUBLIC_SECRET_KEY;
     const issuerPublicKey =
       "GAAJQUQU27YPLDOWTUTFPJK4F2HC22XREDGH5Z4WH4I5MILWDWUXXTGF";
@@ -313,7 +313,7 @@ function PortfolioOverview() {
       setAggregatedData(aggregated);
     } catch (error) {
       console.error("Error fetching properties:", error);
-      toast.error("Failed to fetch investment data");
+      toast.error("Investor don't have any asset");
     }
   };
 
