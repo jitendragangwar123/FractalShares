@@ -4,6 +4,16 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
+import {
+  Keypair,
+  Horizon,
+  Networks,
+  TransactionBuilder,
+  BASE_FEE,
+  Operation,
+  Asset,
+} from "diamante-sdk-js";
+
 type InvestmentBanner = {
   earnedYield: number;
   value: number;
@@ -49,6 +59,10 @@ const PropertyCard: React.FC<
   const handleClaimYield = async () => {
     const days = 3000;
     const issuerSecret = process.env.NEXT_PUBLIC_SECRET_KEY;
+    const issuerPublicKey =
+      "GAAJQUQU27YPLDOWTUTFPJK4F2HC22XREDGH5Z4WH4I5MILWDWUXXTGF";
+    const amountLimit = "10000";
+    const assetName = "RubyTokenNFT";
 
     try {
       setIsLoading(true);
@@ -62,6 +76,9 @@ const PropertyCard: React.FC<
         return;
       }
       const investorPublicKey = ext_resp.message[0];
+      const server = new Horizon.Server("https://diamtestnet.diamcircle.io");
+      const asset = new Asset(assetName, issuerPublicKey);
+      const receiverAccount = await server.loadAccount(investorPublicKey);
 
       // Step 2: Calculate yield
       const calculateYield = await fetch(
@@ -122,6 +139,49 @@ const PropertyCard: React.FC<
       const diamTransferResponse = await diamTransfer.json();
       console.log("diamTransferResponse: ", diamTransferResponse);
       const txnHash = diamTransferResponse.result.hash;
+
+      const transaction = new TransactionBuilder(receiverAccount, {
+        fee: BASE_FEE,
+        networkPassphrase: "Diamante Testnet",
+      })
+        .addOperation(Operation.changeTrust({ asset, limit: amountLimit }))
+        .setTimeout(0)
+        .build();
+
+      const xdr = (transaction as any).toXDR("base64");
+      const signResp = await (window as any).diam.sign(
+        xdr,
+        true,
+        "Diamante Testnet"
+      );
+      if (signResp.response.status !== 200) {
+        toast.dismiss();
+        toast.error("Error signing transaction");
+        setIsLoading(false);
+        return;
+      }
+
+      const metadata = {
+        claimedAmount: yieldAmounts.toString(),
+      };
+      const metadataToString = JSON.stringify(metadata);
+      const encodedMetadata = Buffer.from(metadataToString)
+        .toString("base64")
+        .slice(0, 64);
+      const issueNFT = await fetch("https://fractal-shares-back-end.vercel.app/issueNFT", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          issuerSecret,
+          receiverPublicKey: investorPublicKey,
+          assetName,
+          amount: "1",
+          metadata: encodedMetadata,
+        }),
+      });
+
+      const issuanceNFTResponse = await issueNFT.json();
+      console.log("issuanceNFT Response: ", issuanceNFTResponse);
 
       const storedTransactionsData = await fetch(
         "https://fractal-shares-back-end.vercel.app/storeTransactionsData",
