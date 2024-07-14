@@ -1,5 +1,5 @@
-# FractalShares
-#### A simple way for tokenization of the Real World Assets
+# <p align="center"> Fractal Shares </p>
+#### Revolutionizing Asset Ownership Through Tokenization
 
 Fractal Shares unlocks the potential of real-world assets by tokenizing them into secure, transparent, and tradeable fungible tokens. Our platform addresses the fundamental barriers to asset ownership and investment diversification by offering fractional ownership of high-value assets like real estate, artwork, and intellectual property. Investors can seamlessly buy, sell, and trade fractional shares, democratizing access to lucrative investment opportunities traditionally reserved for the wealthy.
 
