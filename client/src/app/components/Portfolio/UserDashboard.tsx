@@ -124,7 +124,7 @@ const PropertyCard: React.FC<
       const txnHash = diamTransferResponse.result.hash;
 
       const storedTransactionsData = await fetch(
-        "http://localhost:8000/storeTransactionsData",
+        "https://fractal-shares-back-end.vercel.app/storeTransactionsData",
         {
           method: "POST",
           headers: {
