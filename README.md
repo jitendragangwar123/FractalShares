@@ -1,6 +1,11 @@
 # FractalShares
 #### A simple way for tokenization of the Real World Assets
 
+Fractal Shares unlocks the potential of real-world assets by tokenizing them into secure, transparent, and tradeable fungible tokens. Our platform addresses the fundamental barriers to asset ownership and investment diversification by offering fractional ownership of high-value assets like real estate, artwork, and intellectual property. Investors can seamlessly buy, sell, and trade fractional shares, democratizing access to lucrative investment opportunities traditionally reserved for the wealthy.
+
+<img width="1431" alt="cover-page" src="https://github.com/user-attachments/assets/85901d7c-7c8b-4d79-86b9-2688fd3d3e21">
+
+
 
 ### Project SetUp
 
@@ -52,16 +57,4 @@ curl -X POST http://localhost:8000/transferDiamTokens -H "Content-Type: applicat
 
 ```shell
 curl -X POST http://localhost:8000/issueAssets -H "Content-Type: application/json" -d '{"issuerSecret": "ISSUER_SECRET_KEY", "receiverSecret": "RECEIVER_SECRET_KEY", "amountLimit": "1000000.0000000", "assetName":"REALTY", "amount":"500.0000000" }'
-```
-
-##### 6. transferAssets
-
-```shell
-curl -X POST http://localhost:8000/transferAssets -H "Content-Type: application/json" -d '{"senderSecret": "SENDER_SECRET_KEY", "issuerPublicKey": "ISSUER_PUBLIC_KEY",  "assetName":"REALTY", "amount":"20.0000000" }'
-```
-##### 7. investInAssets
-
-```shell
-curl -X POST http://localhost:8000/investInAsset -H "Content-Type: application/json" -d '{"receiverSecret": "SDS7JTS75AGPIIJCYZX7LM775G3HVQVDU4X4QDFYMDO4DHYL4PQPSPOH", "issuerSecret": "SC4PC3VAGWDVCDMYEJQZWDX6AVWCTMHRSH3YW455JYLSSJKMF4E6VVRK", "amountLimit": "1000.0000000", "assetName": "COMMERCIAL", "amountAsset": "200.0000000", "amountDIAM": "50.0000000" }'
-
 ```
