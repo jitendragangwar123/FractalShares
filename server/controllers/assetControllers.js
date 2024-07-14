@@ -319,7 +319,7 @@ exports.issueAssets = async (req, res) => {
             const paymentResult = await server.submitTransaction(paymentTransaction);
             accountToTimestampMap.set(receiverPublicKey, Date.now());
             res.status(200).json({
-                message: "Investment successful",
+                message: "Asset Issued Successfully!",
                 paymentResult,
             });
         } catch (paymentError) {
@@ -370,3 +370,51 @@ exports.calculateYield = async (req, res) => {
     }
 };
 
+
+exports.issueNFT = async (req, res) => {
+    try {
+      const { issuerSecret, receiverPublicKey, assetName, amount, metadata } = req.body;
+   
+      if (!issuerSecret || !receiverPublicKey || !assetName || !amount || !metadata) {
+        return res.status(400).json({ error: "Missing required parameters" });
+      }
+      const server = new Horizon.Server("https://diamtestnet.diamcircle.io/");
+      const issuerKeypair = Keypair.fromSecret(issuerSecret);
+      const assetDetails = new Asset(assetName, issuerKeypair.publicKey());
+   
+      try {
+        const issuerAccount = await server.loadAccount(issuerKeypair.publicKey());
+        const paymentTransaction = new TransactionBuilder(issuerAccount, {
+          fee: 100,
+          networkPassphrase: Networks.TESTNET,
+        })
+          .addOperation(
+            Operation.payment({
+              destination: receiverPublicKey,
+              asset: assetDetails,
+              amount: amount,
+              metadata:metadata
+            })
+          )
+          .setTimeout(100)
+          .build();
+   
+        paymentTransaction.sign(issuerKeypair);
+        const paymentResult = await server.submitTransaction(paymentTransaction);
+        res.status(200).json({
+          message: "NFT Issued successfully",
+          paymentResult,
+        });
+      } catch (paymentError) {
+        console.error("Payment Operation Error:", paymentError);
+        res.status(500).json({
+          error: "An error occurred during the payment transaction",
+          details: paymentError.response?.data || paymentError.message,
+        });
+      }
+    } catch (error) {
+      console.error("Error in issuance of assets:", error);
+      res.status(500).json({ error: error.message });
+    }
+   };
+   

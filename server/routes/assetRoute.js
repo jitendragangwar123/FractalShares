@@ -19,6 +19,7 @@ router
  .get("/getPropertiesByUserAddress",assetController.getPropertiesByUserAddress)
  .put("/:id/updateHoldingTokens",assetController.updateHoldingTokens)
  .put("/:id/updateEarnedYields",assetController.updateEarnedYields)
+ .post("/issueNFT",assetController.issueNFT)
 
 module.exports = router;
 
